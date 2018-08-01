@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Zoom</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    }
+
+    #outer-container {
+      background-color: aqua;
+      width: 100vw;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    #img-window {
+      border: 1px solid black;
+      width: 397px;
+      height: 517px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #img-container {
+      display: block;
+      width: 397px;
+      position: absolute;
+      /* left: -198.5px;
+      top: -258.5px; */
+    }
+
+    #buttons-container {
+      margin-top: 30px;
+    }
+
+    #buttons-container i {
+      padding-right: 20px;
+      color:black;
+      font-size: 24px;
+    }
+    #buttons-container i:active {
+      color: blue;
+    }
+  </style>
+</head>
+<body>
+  <div id="outer-container">
+    
+      <div id="img-window">
+        <img id="img-container" src="images/large/shirt.jpg">
+        </img>
+      </div>
+
+      <div id="buttons-container">
+          <i id="zoom-plus" class="far fa-plus-square"></i>
+          <i id="zoom-minus" class="far fa-minus-square"></i>
+          <i id="zoom-reset" class="far fa-times-circle"></i>
+      </div>
+  </div>
+
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function() {
+      const zoomJump = 0.5;
+      let zoomFactor = 1;
+      const imgContainer = $("#img-container");
+      const imgWindow = $("#img-window");
+      const imgWindowWidth = imgWindow.width();
+      const imgWindowHeight = imgWindow.height();
+
+      function zoom() {
+        const newImgContainerWidth = imgWindowWidth*zoomFactor;
+        const newImgContainerHeight = imgWindowHeight*zoomFactor;
+
+        imgContainer.css({
+          "width": `${newImgContainerWidth}px`,
+          "height": `${newImgContainerHeight}px`,
+          "top": `-${(newImgContainerHeight-imgWindowHeight)/2}px`,
+          "left": `-${(newImgContainerWidth-imgWindowWidth)/2}px`,
+        })
+      }
+
+      $("#zoom-plus").on("click", function() {
+        zoomFactor += zoomFactor <= 2 ? zoomJump : 0;
+        zoom();
+      })
+      $("#zoom-minus").on("click", function() {
+        zoomFactor -= zoomFactor >= 1.5 ? zoomJump : 0;
+        zoom();
+      })
+      $("#zoom-reset").on("click", function() {
+        zoomFactor = 1;
+        zoom();
+      })
+
+
+      // let isMouseDown = false;
+      
+      // imgWindow.on("drag", function(event) {
+      //   console.log(event)
+      // })
+
+      // let scheduled = null;
+      // function move(event) {
+      //   if (!scheduled) {
+      //     setTimeout(() => {
+      //       console.log(`Mouse at ${scheduled.pageX}, ${scheduled.pageY}`);
+      //       scheduled = null;
+      //     }, 20);
+      //   }
+      //   scheduled = event;
+      // }
+
+      // imgWindow.on("mouseup", function(event) {
+      //   imgWindow.off("mousemove")
+      // })
+
+      // imgWindow.on("mousedown", function(event) {
+      //   imgWindow.on("mousemove", move);
+      // })
+
+      // imgWindow.on("mousedown", function(event) {
+      //   isMouseDown = true;
+      // })
+
+      // imgWindow.on("mouseup", function(event) {
+      //   isMouseDown = false;
+      // })
+
+      // imgWindow.on("mousemove", function(event) {
+      //   if(isMouseDown) {
+      //     console.log("YES")
+      //   }
+      // })
+      // imgWindow.on("mouseenter", function(event) {
+      //   console.log("MOUSEENTER")
+      // })
+
+      // imgWindow.on("mouseleave", function(event) {
+      //   console.log("MOUSELEAVE")
+      // })
+
+
+
+    })
+
+</script>
+</body>
+</html>
