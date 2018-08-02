@@ -45,16 +45,39 @@
 
     #buttons-container {
       margin-top: 30px;
+      display: flex;
+      width: 50px;
+      flex-direction: column;
     }
 
     #buttons-container i {
       padding-right: 20px;
       color:black;
       font-size: 24px;
+      align-self: center;
     }
     
     #buttons-container i:active {
       color: blue;
+    }
+
+    #img-preview-container {
+      display: flex;
+    }
+
+    #img-preview-container img {
+      width: 80px;
+      height: 104px;
+      margin: 6px 6px 0 6px;
+      border: 2px solid transparent;
+    }
+
+    #change-image {
+      display: flex;
+    }
+
+    .black-border {
+      border: 2px solid black !important;
     }
   </style>
 </head>
@@ -66,10 +89,17 @@
         </img>
       </div>
 
-      <div id="buttons-container">
+      <div id="change-image">
+        <div id="buttons-container">
           <i id="zoom-plus" class="far fa-plus-square"></i>
           <i id="zoom-minus" class="far fa-minus-square"></i>
           <i id="zoom-reset" class="far fa-times-circle"></i>
+        </div>
+
+        <div id="img-preview-container">
+          <img id="img-preview-1" src="images/large/shirt.jpg">
+          <img id="img-preview-2" src="images/large/red-shirt.jpg">
+         </div>
       </div>
   </div>
 
@@ -77,6 +107,7 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+
   <script>
     $(document).ready(function() {
       const zoomJump = 0.5;
@@ -87,12 +118,30 @@
       const imgWindowHeight = imgWindow.height();
       const imgWindowOffsetX = imgWindow.offset().left;
       const imgWindowOffsetY = imgWindow.offset().top;
+      const centerX = imgWindow.height()/2;
+      const centerY = imgWindow.height()/2;
+
+      const imgPreview1 = $("#img-preview-1")
+      const imgPreview2 = $("#img-preview-2")
+      imgPreview1.addClass("black-border")
+
+      imgPreview1.on("click", function() {
+        imgPreview1.addClass("black-border")
+        imgPreview2.removeClass("black-border")
+        imgContainer.attr("src", "images/large/shirt.jpg")
+      })
+
+      imgPreview2.on("click", function() {
+        imgPreview2.addClass("black-border")
+        imgPreview1.removeClass("black-border")
+        imgContainer.attr("src", "images/large/red-shirt.jpg")
+      })
 
       function zoom() {
         console.log("called")
         const newImgContainerWidth = imgWindowWidth*zoomFactor;
         const newImgContainerHeight = imgWindowHeight*zoomFactor;
-        
+        console.log(newImgContainerWidth,newImgContainerHeight)
         imgContainer.css({
           "width": `${newImgContainerWidth}px`,
           "height": `${newImgContainerHeight}px`,
@@ -100,7 +149,6 @@
           "left": `-${(newImgContainerWidth-imgWindowWidth)/2}px`,
         })
       }
-
       function move(event) {
         const x = event.pageX - imgWindowOffsetX;
         const y = event.pageY - imgWindowOffsetY;
@@ -108,58 +156,74 @@
         console.log(y)
         const newImgContainerWidth = imgWindowWidth*zoomFactor;
         const newImgContainerHeight = imgWindowHeight*zoomFactor;
-
         imgContainer.css({
           "top": `-${y/zoomFactor}px`,
           "left": `-${x/zoomFactor}px`,
         })
       }
-
-      imgWindow.on('click', function(event) {
-
-        if(zoomFactor == 1) {
-          zoomFactor += zoomFactor <= 2 ? zoomJump : 0;
-          const newImgContainerWidth = imgWindowWidth*zoomFactor;
-          const newImgContainerHeight = imgWindowHeight*zoomFactor;
-
+      function determineQuadrant(clickX, clickY){
+      console.log("yes")
+        switch(true) {
+            case clickX < centerX && clickY < centerY:
+                return 2
+                break;
+            case clickX < centerX && clickY > centerY:
+                return 3
+                break;
+            case clickX > centerX && clickY > centerY:
+                return 4
+                break;
+            case clickX > centerX && clickY < centerY:
+                return 1
+                break;
+            case clickX == centerX && clickY == centerY:
+                return 0
+                break;
+            default:
+                break;
+        }
+      }
+      imgWindow.on('click', function(event ){
+        zoomFactor += zoomFactor <= 2 ? zoomJump : 0;        
+        const x = event.pageX - imgWindowOffsetX;
+        const y = event.pageY - imgWindowOffsetY;
+        let quadrant = determineQuadrant(x,y)
+        console.log(x,y,centerX,centerY, quadrant)
+        zoom();    
+        if (quadrant ==4 ){
+          console.log("quadrant 4")
           imgContainer.css({
-            "width": `${newImgContainerWidth}px`,
-            "height": `${newImgContainerHeight}px`,
-          })
-
-          let targetX, targetY;
-
-          const imgContainerWidth = imgContainer.width()
-          const imgContainerHeight = imgContainer.height()
-
-          let scaledX = (event.pageX - imgWindowOffsetX)*zoomFactor;
-          let scaledY = (event.pageY - imgWindowOffsetY)*zoomFactor;
-
-          if((scaledX > imgWindowWidth/2 && scaledX < imgContainerWidth - imgWindowWidth/2) &&
-              (scaledY > imgWindowHeight/2 && scaledY < imgContainerHeight - imgWindowHeight/2)) {
-
-            const targetX = imgWindowOffsetX + imgWindowWidth/2 - event.pageX;
-            const targetY = imgWindowOffsetY + imgWindowHeight/2 - event.pageY;
-          }
-
+            "bottom": `-${0}px`,
+            "right": `-${0}px`,
+          })  
+        }
+        if (quadrant ==3){
+          console.log("quadrant 3")
           imgContainer.css({
-            "top": `${targetY}px`,
-            "left": `${targetX}px`,
+            "top": `-${0}px`,
+            "left": `+${0}px`,
+          })  
+        }  
+        if (quadrant ==2){
+          console.log("quadrant 2")
+          imgContainer.css({
+            "top": `+${0}px`,
+            "left": `+${0}px`,
           })
-        } else if(zoomFactor == 2) {
-
-        } else if(zoomFactor == 2.5) {
-
+        }
+        if (quadrant ==1){
+          console.log("quadrant 1")
+          imgContainer.css({
+            "top": `+${0}px`,
+            "right": '-200px',
+          })
         }
 
-        
+        // imgContainer.css({
+        //   "top": `-${y}px`,
+        //   "left": `-${x}px`,
+        // })
       })
-
-      imgWindow.on("dblclick", function() {
-        zoomFactor = 1;
-        zoom();
-      })
-
       $("#zoom-plus").on("click", function() {
         zoomFactor += zoomFactor <= 2 ? zoomJump : 0;
         zoom();
@@ -172,26 +236,20 @@
         zoomFactor = 1;
         zoom();
       })
-
-
       imgWindow.on("mousedown", function() {
         if(zoomFactor == 1)
           return;
-
         imgWindow.on("mousemove", move)
-
         imgWindow.on("mouseup", function() {
           imgWindow.off("mousemove")
           imgWindow.off("mouseup")
         })
       })
-
       imgWindow.on("dragstart", function() {
         return false;
       })
-
     })
 
-</script>
+  </script>
 </body>
 </html>
