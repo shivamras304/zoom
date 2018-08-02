@@ -92,7 +92,7 @@
         console.log("called")
         const newImgContainerWidth = imgWindowWidth*zoomFactor;
         const newImgContainerHeight = imgWindowHeight*zoomFactor;
-        console.log(newImgContainerWidth,newImgContainerHeight)
+        
         imgContainer.css({
           "width": `${newImgContainerWidth}px`,
           "height": `${newImgContainerHeight}px`,
@@ -115,16 +115,50 @@
         })
       }
 
-      // imgContainer.on('click', function(e){
-      //   zoom();
-      //   // // const newImgContainerWidth = imgWindowWidth*zoomFactor;
-      //   // // const newImgContainerHeight = imgWindowHeight*zoomFactor;
+      imgWindow.on('click', function(event) {
 
-      //   // imgContainer.css({
-      //   //   "top": `-${y*zoomFactor}px`,
-      //   //   "left": `-${x*zoomFactor}px`,
-      //   // })
-      // })
+        if(zoomFactor == 1) {
+          zoomFactor += zoomFactor <= 2 ? zoomJump : 0;
+          const newImgContainerWidth = imgWindowWidth*zoomFactor;
+          const newImgContainerHeight = imgWindowHeight*zoomFactor;
+
+          imgContainer.css({
+            "width": `${newImgContainerWidth}px`,
+            "height": `${newImgContainerHeight}px`,
+          })
+
+          let targetX, targetY;
+
+          const imgContainerWidth = imgContainer.width()
+          const imgContainerHeight = imgContainer.height()
+
+          let scaledX = (event.pageX - imgWindowOffsetX)*zoomFactor;
+          let scaledY = (event.pageY - imgWindowOffsetY)*zoomFactor;
+
+          if((scaledX > imgWindowWidth/2 && scaledX < imgContainerWidth - imgWindowWidth/2) &&
+              (scaledY > imgWindowHeight/2 && scaledY < imgContainerHeight - imgWindowHeight/2)) {
+
+            const targetX = imgWindowOffsetX + imgWindowWidth/2 - event.pageX;
+            const targetY = imgWindowOffsetY + imgWindowHeight/2 - event.pageY;
+          }
+
+          imgContainer.css({
+            "top": `${targetY}px`,
+            "left": `${targetX}px`,
+          })
+        } else if(zoomFactor == 2) {
+
+        } else if(zoomFactor == 2.5) {
+
+        }
+
+        
+      })
+
+      imgWindow.on("dblclick", function() {
+        zoomFactor = 1;
+        zoom();
+      })
 
       $("#zoom-plus").on("click", function() {
         zoomFactor += zoomFactor <= 2 ? zoomJump : 0;
@@ -141,7 +175,7 @@
 
 
       imgWindow.on("mousedown", function() {
-        if(zoomFactor == 1) 
+        if(zoomFactor == 1)
           return;
 
         imgWindow.on("mousemove", move)
