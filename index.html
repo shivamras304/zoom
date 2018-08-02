@@ -52,6 +52,7 @@
       color:black;
       font-size: 24px;
     }
+    
     #buttons-container i:active {
       color: blue;
     }
@@ -60,7 +61,7 @@
 <body>
   <div id="outer-container">
     
-      <div id="img-window">
+      <div id="img-window" draggable="true">
         <img id="img-container" src="images/large/shirt.jpg">
         </img>
       </div>
@@ -84,11 +85,14 @@
       const imgWindow = $("#img-window");
       const imgWindowWidth = imgWindow.width();
       const imgWindowHeight = imgWindow.height();
+      const imgWindowOffsetX = imgWindow.offset().left;
+      const imgWindowOffsetY = imgWindow.offset().top;
 
       function zoom() {
+        console.log("called")
         const newImgContainerWidth = imgWindowWidth*zoomFactor;
         const newImgContainerHeight = imgWindowHeight*zoomFactor;
-
+        console.log(newImgContainerWidth,newImgContainerHeight)
         imgContainer.css({
           "width": `${newImgContainerWidth}px`,
           "height": `${newImgContainerHeight}px`,
@@ -96,6 +100,31 @@
           "left": `-${(newImgContainerWidth-imgWindowWidth)/2}px`,
         })
       }
+
+      function move(event) {
+        const x = event.pageX - imgWindowOffsetX;
+        const y = event.pageY - imgWindowOffsetY;
+        console.log(x)
+        console.log(y)
+        const newImgContainerWidth = imgWindowWidth*zoomFactor;
+        const newImgContainerHeight = imgWindowHeight*zoomFactor;
+
+        imgContainer.css({
+          "top": `-${y/zoomFactor}px`,
+          "left": `-${x/zoomFactor}px`,
+        })
+      }
+
+      // imgContainer.on('click', function(e){
+      //   zoom();
+      //   // // const newImgContainerWidth = imgWindowWidth*zoomFactor;
+      //   // // const newImgContainerHeight = imgWindowHeight*zoomFactor;
+
+      //   // imgContainer.css({
+      //   //   "top": `-${y*zoomFactor}px`,
+      //   //   "left": `-${x*zoomFactor}px`,
+      //   // })
+      // })
 
       $("#zoom-plus").on("click", function() {
         zoomFactor += zoomFactor <= 2 ? zoomJump : 0;
@@ -111,53 +140,21 @@
       })
 
 
-      // let isMouseDown = false;
-      
-      // imgWindow.on("drag", function(event) {
-      //   console.log(event)
-      // })
+      imgWindow.on("mousedown", function() {
+        if(zoomFactor == 1) 
+          return;
 
-      // let scheduled = null;
-      // function move(event) {
-      //   if (!scheduled) {
-      //     setTimeout(() => {
-      //       console.log(`Mouse at ${scheduled.pageX}, ${scheduled.pageY}`);
-      //       scheduled = null;
-      //     }, 20);
-      //   }
-      //   scheduled = event;
-      // }
+        imgWindow.on("mousemove", move)
 
-      // imgWindow.on("mouseup", function(event) {
-      //   imgWindow.off("mousemove")
-      // })
+        imgWindow.on("mouseup", function() {
+          imgWindow.off("mousemove")
+          imgWindow.off("mouseup")
+        })
+      })
 
-      // imgWindow.on("mousedown", function(event) {
-      //   imgWindow.on("mousemove", move);
-      // })
-
-      // imgWindow.on("mousedown", function(event) {
-      //   isMouseDown = true;
-      // })
-
-      // imgWindow.on("mouseup", function(event) {
-      //   isMouseDown = false;
-      // })
-
-      // imgWindow.on("mousemove", function(event) {
-      //   if(isMouseDown) {
-      //     console.log("YES")
-      //   }
-      // })
-      // imgWindow.on("mouseenter", function(event) {
-      //   console.log("MOUSEENTER")
-      // })
-
-      // imgWindow.on("mouseleave", function(event) {
-      //   console.log("MOUSELEAVE")
-      // })
-
-
+      imgWindow.on("dragstart", function() {
+        return false;
+      })
 
     })
 
