@@ -142,12 +142,12 @@
         const newImgContainerWidth = imgWindowWidth*zoomFactor;
         const newImgContainerHeight = imgWindowHeight*zoomFactor;
         console.log(newImgContainerWidth,newImgContainerHeight)
-        imgContainer.css({
+        imgContainer.animate({
           "width": `${newImgContainerWidth}px`,
           "height": `${newImgContainerHeight}px`,
           // "top": `-${(newImgContainerHeight-imgWindowHeight)/2}px`,
           // "left": `-${(newImgContainerWidth-imgWindowWidth)/2}px`,
-        })
+        }, 500)
       }
       function move(event) {
         const x = event.pageX - imgWindowOffsetX;
@@ -189,34 +189,45 @@
         const y = event.pageY - imgWindowOffsetY;
         let quadrant = determineQuadrant(x,y)
         console.log(x,y,centerX,centerY, quadrant)
-        zoom();    
+        // zoom();    
+        const newImgContainerWidth = imgWindowWidth*zoomFactor;
+        const newImgContainerHeight = imgWindowHeight*zoomFactor;
+
         if (quadrant ==4 ){
           console.log("quadrant 4")
-          imgContainer.css({
+          imgContainer.animate({
             "bottom": `-${0}px`,
             "right": `-${0}px`,
-          })  
+            "width": `${newImgContainerWidth}px`,
+            "height": `${newImgContainerHeight}px`,
+          }, 500)  
         }
         if (quadrant ==3){
           console.log("quadrant 3")
-          imgContainer.css({
+          imgContainer.animate({
             "bottom": `-${0}px`,
             "left": `+${0}px`,
-          })  
+            "width": `${newImgContainerWidth}px`,
+            "height": `${newImgContainerHeight}px`,
+          }, 500)  
         }  
         if (quadrant ==2){
           console.log("quadrant 2")
-          imgContainer.css({
+          imgContainer.animate({
             "top": `+${0}px`,
             "left": `+${0}px`,
-          })
+            "width": `${newImgContainerWidth}px`,
+            "height": `${newImgContainerHeight}px`,
+          }, 500)
         }
         if (quadrant ==1){
           console.log("quadrant 1")
-          imgContainer.css({
+          imgContainer.animate({
             "top": `+${0}px`,
             "right": `-${0}px`,
-          })
+            "width": `${newImgContainerWidth}px`,
+            "height": `${newImgContainerHeight}px`,
+          }, 500)
         }
 
         // imgContainer.css({
